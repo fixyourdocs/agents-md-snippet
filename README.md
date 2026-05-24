@@ -6,7 +6,7 @@ The block speaks the [Docs Feedback Protocol](https://docsfeedback.org) — an o
 
 ## Why
 
-Agents already read `AGENTS.md` (Cursor, Claude Code, Codex, Devin, Gemini CLI, Copilot, …). One paste-ready block is enough to turn every agent run on your repo into a free, structured signal about what's wrong with your docs — without changing any agent.
+Agents already read `AGENTS.md` (Cursor, Claude Code, Codex, Devin, Gemini CLI, Copilot, …). One paste-ready block is enough to turn every agent run on your repo into a free, structured signal about what is wrong with your docs — without changing any agent.
 
 ## The snippet
 
@@ -25,25 +25,49 @@ How to file a report:
     curl -X POST https://hub.fixyourdocs.io/v1/reports \
       -H 'Content-Type: application/json' \
       -d '{
-        "doc_url":  "<URL or path of the doc you were reading>",
-        "summary":  "<one-line description of the problem>",
-        "details":  "<what you expected vs. what the doc said>",
-        "context":  "<the task you were trying to complete>"
+        "protocol_version": "0",
+        "doc_url": "<URL or path of the doc you were reading>",
+        "agent":   { "name": "<your agent id, e.g. claude-code>" },
+        "report":  {
+          "kind":    "<broken | incorrect | outdated | missing | unclear | other>",
+          "summary": "<one-line description of the problem>",
+          "details": "<what you expected vs. what the doc said (optional)>"
+        }
       }'
 
 Spec: https://docsfeedback.org
 ```
 
-## One-command install
+The block is the canonical wording. Other repositories (the FixYourDocs CLI, the SDKs, the docs-platform integrations) embed this same text by SHA-pinned drift check rather than by hand-copy — see the [snippet-drift workflow](.github/workflows/snippet-drift.yml).
 
-The same block is added automatically to your `AGENTS.md` by the FixYourDocs CLI:
+## Install
+
+There are two paths. Both produce the same final `AGENTS.md`.
+
+### CLI (recommended)
 
 ```sh
 npx fixyourdocs init
 ```
 
-(The CLI lives in [`fixyourdocs/sdk-typescript`](https://github.com/fixyourdocs/sdk-typescript).)
+The CLI ships with the [TypeScript SDK](https://github.com/fixyourdocs/sdk-typescript). It detects whichever agent-instructions file your repo uses (`AGENTS.md`, `CLAUDE.md`, `.cursor/rules`, `.github/copilot-instructions.md`) and appends the block. Re-running is a no-op when the block is already present.
+
+The Python equivalent:
+
+```sh
+pipx run fixyourdocs init
+```
+
+ships with the [Python SDK](https://github.com/fixyourdocs/sdk-python).
+
+### Manual
+
+Open your repo's agent-instructions file and paste the block above at the end. That's it — there is no other state to configure.
+
+## What happens after install
+
+The next time an AI agent runs against your repo and hits broken docs, it reads `AGENTS.md`, sees the block, and POSTs a v0 Docs Feedback Protocol report to [`hub.fixyourdocs.io/v1/reports`](https://hub.fixyourdocs.io/v1/reports). When you connect the hub to your repo (one-click GitHub OAuth), each report shows up as a GitHub Issue. There is nothing to install on the agent side; the snippet is the integration.
 
 ## Licence
 
-Apache License 2.0 — see [`LICENSE`](LICENSE). You are free to paste this block into any project, public or private.
+Apache License 2.0 — see [`LICENSE`](LICENSE). You are free to paste this block into any project, public or private, with no attribution requirement on the resulting `AGENTS.md`.
