@@ -66,7 +66,7 @@ Open your repo's agent-instructions file and paste the block above at the end. T
 
 ## What happens after install
 
-The next time an AI agent runs against your repo and hits broken docs, it reads `AGENTS.md`, sees the block, and POSTs a v0 Docs Feedback Protocol report to [`hub.fixyourdocs.io/v1/reports`](https://hub.fixyourdocs.io/v1/reports). When you connect the hub to your repo (one-click GitHub OAuth), each report shows up as a GitHub Issue. There is nothing to install on the agent side; the snippet is the integration.
+The next time an AI agent runs against your repo and hits broken docs, it reads `AGENTS.md`, sees the block, and POSTs a v0 Docs Feedback Protocol report to [`hub.fixyourdocs.io/v1/reports`](https://hub.fixyourdocs.io/v1/reports). When you connect the hub to your repo (via the FixYourDocs GitHub App), each report shows up as a GitHub Issue. There is nothing to install on the agent side; the snippet is the integration.
 
 ## Licence
 
