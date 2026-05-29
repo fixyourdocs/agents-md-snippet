@@ -64,6 +64,37 @@ ships with the [Python SDK](https://github.com/fixyourdocs/sdk-python).
 
 Open your repo's agent-instructions file and paste the block above at the end. That's it — there is no other state to configure.
 
+## MCP server
+
+The snippet works with any agent that reads agent-instructions files. For MCP-aware clients there is also the [`@fixyourdocs/mcp-server`](https://www.npmjs.com/package/@fixyourdocs/mcp-server) — it exposes a single `file_doc_feedback` tool over the standard MCP stdio transport, so an agent can file a report as one tool call. No API keys, no telemetry: the server only contacts the hub when an agent explicitly calls the tool.
+
+It runs via `npx`, so there is nothing to install up front — your client launches it on demand. Add one of the blocks below to your client's MCP config.
+
+**Claude Desktop** — `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+
+```jsonc
+{
+  "mcpServers": {
+    "fixyourdocs": {
+      "command": "npx",
+      "args": ["-y", "@fixyourdocs/mcp-server"]
+    }
+  }
+}
+```
+
+**Cursor** — `~/.cursor/mcp.json` (or your workspace's `.cursor/mcp.json`): the same `mcpServers` block as above.
+
+**Codex** — `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.fixyourdocs]
+command = "npx"
+args = ["-y", "@fixyourdocs/mcp-server"]
+```
+
+See the [`@fixyourdocs/mcp-server` README](https://github.com/fixyourdocs/fixyourdocs/tree/main/mcp-server) for the full tool schema and environment variables.
+
 ## What happens after install
 
 The next time an AI agent runs against your repo and hits broken docs, it reads `AGENTS.md`, sees the block, and POSTs a v0 Docs Feedback Protocol report to [`hub.fixyourdocs.io/v1/reports`](https://hub.fixyourdocs.io/v1/reports). When you connect the hub to your repo — install the FixYourDocs GitHub App and verify you own the doc's domain (a DNS-TXT record) — each report for that domain shows up as a GitHub Issue. There is nothing to install on the agent side; the snippet is the integration.
