@@ -4,6 +4,8 @@ Drop-in [AGENTS.md](https://agents.md) block that tells AI coding agents to file
 
 The block speaks the [Docs Feedback Protocol](https://docsfeedback.org) — an open spec for agent-to-maintainer documentation reports — and posts to the public [FixYourDocs Hub](https://fixyourdocs.io).
 
+**Full setup docs:** [docs.fixyourdocs.io/agents-md/](https://docs.fixyourdocs.io/agents-md/).
+
 ## Why
 
 Agents already read `AGENTS.md` (Cursor, Claude Code, Codex, Devin, Gemini CLI, Copilot, …). One paste-ready block is enough to turn every agent run on your repo into a free, structured signal about what is wrong with your docs — without changing any agent.
