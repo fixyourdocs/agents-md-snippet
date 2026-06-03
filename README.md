@@ -49,7 +49,7 @@ There are two paths. Both produce the same final `AGENTS.md`.
 ### CLI (recommended)
 
 ```sh
-npx fixyourdocs init
+npx @fixyourdocs/sdk init
 ```
 
 The CLI ships with the [TypeScript SDK](https://github.com/fixyourdocs/sdk-typescript). It detects whichever agent-instructions file your repo uses (`AGENTS.md`, `CLAUDE.md`, `.cursor/rules`, `.github/copilot-instructions.md`) and appends the block. Re-running is a no-op when the block is already present.
