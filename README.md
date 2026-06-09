@@ -1,10 +1,20 @@
 # agents-md-snippet
 
-Drop-in [AGENTS.md](https://agents.md) block that tells AI coding agents to file a structured report whenever they hit broken, incorrect, outdated, or incomplete documentation while working in your repo.
+Drop-in [AGENTS.md](https://agents.md) block that tells AI coding agents to file a structured report whenever they hit broken, incorrect, outdated, or incomplete documentation.
 
 The block speaks the [Docs Feedback Protocol](https://docsfeedback.org) — an open spec for agent-to-maintainer documentation reports — and posts to the public [FixYourDocs Hub](https://fixyourdocs.io).
 
 **Full setup docs:** [docs.fixyourdocs.io/agents-md/](https://docs.fixyourdocs.io/agents-md/).
+
+## Two ways to use this
+
+There are two distinct, complementary adoption paths. They coexist — neither replaces the other.
+
+- **Mode A — first-party (paste into your repo).** You maintain some docs. You paste the [canonical block](#the-snippet) into *your* repo's `AGENTS.md`, and every agent that works **in your repo** reports **your repo's** broken docs back to you. This is what the rest of this README, the `fixyourdocs init` CLI, and the SDKs are built around. Wording: *"documentation in **this repository**."*
+
+- **Mode B — consumer-side (install into your own agent).** You're a developer building something unrelated, and your agent consults a **third-party** library's / API's / framework's docs that turn out to be broken. You install the [report-anywhere block](#reporting-third-party-docs-consumer-side) into your *own, global* agent config (plus the [`@fixyourdocs/mcp-server`](#mcp-server)), and your agent **offers to report** that third party's stale docs — even though that third party never instrumented their repo. Wording: *"external / third-party docs you relied on."*
+
+Mode A is supply-side instrumentation; Mode B is demand-side. In both, the **receiver** (the docs owner) still has to claim and DNS-verify their domain and install the hub integration to receive anything — Mode B only removes the *reporting-side* install requirement, not the receiver's.
 
 ## Why
 
@@ -12,7 +22,7 @@ Agents already read `AGENTS.md` (Cursor, Claude Code, Codex, Devin, Gemini CLI, 
 
 ## The snippet
 
-Append the block below to your repo's `AGENTS.md` (or `CLAUDE.md`, or `.cursor/rules`, or any equivalent agent-instructions file):
+**(Mode A — first-party.)** Append the block below to your repo's `AGENTS.md` (or `CLAUDE.md`, or `.cursor/rules`, or any equivalent agent-instructions file):
 
 ```markdown
 ## Documentation feedback
@@ -41,6 +51,37 @@ Spec: https://docsfeedback.org
 ```
 
 The block is the canonical wording. Other repositories (the FixYourDocs CLI, the SDKs, the docs-platform integrations) embed this same text by SHA-pinned drift check rather than by hand-copy — see the [snippet-drift workflow](.github/workflows/snippet-drift.yml).
+
+## Reporting third-party docs (consumer side)
+
+**(Mode B.)** The block above is repo-scoped on purpose — it says *"documentation in **this repository**."* If instead you want **your own agent** to report the broken third-party docs it stumbles on while you build something else, install the block below into your *global* agent config — `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, your global Cursor rules, or wherever your client reads global instructions — rather than into any one project's `AGENTS.md`:
+
+```text
+## Reporting stale third-party docs
+
+While working on this project, if you rely on a **third-party / external**
+documentation page — a library, API, framework, or hosted docs site you
+consulted, *not* this project's own docs, and never an internal, private,
+`localhost`, or login-gated page — and you find it broken, incorrect,
+outdated, or incomplete, **offer to file a structured report** via the
+Docs Feedback Protocol so its maintainers can fix it for the next agent
+(or human) that hits the same issue.
+
+Rules:
+
+- **Ask before sending.** Offer to file the report; only send once the
+  developer confirms.
+- **Public docs only.** Only report a page served over public `https://`.
+  Never report `localhost`, internal, private, or login-gated URLs.
+- **Never include private context.** No private code, secrets, internal
+  URLs, or transcript excerpts from this project.
+
+Prefer the `file_doc_feedback` MCP tool from `@fixyourdocs/mcp-server`
+if available; otherwise POST to `https://hub.fixyourdocs.io/v1/reports`
+per https://docsfeedback.org.
+```
+
+Unlike the Mode A block, this one is **not** drift-locked across the SDKs (it has no `fixyourdocs init` paste path yet); this README is its single source of truth. The matching consent + privacy behaviour — refusing non-public `doc_url`s and honouring a doc host's `/.well-known/docs-feedback.json` opt-out **before** anything leaves your machine — is enforced for you by the [`@fixyourdocs/mcp-server`](#mcp-server) and the SDK clients it builds on, so the MCP tool is the recommended carrier for Mode B.
 
 ## Install
 
