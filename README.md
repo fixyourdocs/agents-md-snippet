@@ -81,7 +81,7 @@ if available; otherwise POST to `https://hub.fixyourdocs.io/v1/reports`
 per https://docsfeedback.org.
 ```
 
-Unlike the Mode A block, this one is **not** drift-locked across the SDKs (it has no `fixyourdocs init` paste path yet); this README is its single source of truth. The matching consent + privacy behaviour — refusing non-public `doc_url`s and honouring a doc host's `/.well-known/docs-feedback.json` opt-out **before** anything leaves your machine — is enforced for you by the [`@fixyourdocs/mcp-server`](#mcp-server) and the SDK clients it builds on, so the MCP tool is the recommended carrier for Mode B.
+Unlike the Mode A block, this one is **not** under the `snippet-drift` SHA-lock. The `fixyourdocs init --global` consumer-install path (in both SDKs) embeds its own inline copy of this text rather than pinning to a shared constant — a deliberate choice to avoid a second cross-repo content lock for little gain. Treat this README as the **canonical** wording and keep the CLI copies in step with it by hand. The matching consent + privacy behaviour — refusing non-public `doc_url`s and honouring a doc host's `/.well-known/docs-feedback.json` opt-out **before** anything leaves your machine — is enforced for you by the [`@fixyourdocs/mcp-server`](#mcp-server) and the SDK clients it builds on, so the MCP tool is the recommended carrier for Mode B.
 
 ## Install
 
