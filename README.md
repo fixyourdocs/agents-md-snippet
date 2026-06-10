@@ -14,7 +14,7 @@ There are two distinct, complementary adoption paths. They coexist — neither r
 
 - **Mode B — consumer-side (install into your own agent).** You're a developer building something unrelated, and your agent consults a **third-party** library's / API's / framework's docs that turn out to be broken. You install the [report-anywhere block](#reporting-third-party-docs-consumer-side) into your *own, global* agent config (plus the [`@fixyourdocs/mcp-server`](#mcp-server)), and your agent **offers to report** that third party's stale docs — even though that third party never instrumented their repo. Wording: *"external / third-party docs you relied on."*
 
-Mode A is supply-side instrumentation; Mode B is demand-side. In both, the **receiver** (the docs owner) still has to claim and DNS-verify their domain and install the hub integration to receive anything — Mode B only removes the *reporting-side* install requirement, not the receiver's.
+Mode A is supply-side instrumentation; Mode B is demand-side. In both, the **receiver** (the docs owner) still has to claim and verify the docs they own and install the hub integration to receive anything — Mode B only removes the *reporting-side* install requirement, not the receiver's.
 
 ## The snippet
 
@@ -150,7 +150,7 @@ See the [`@fixyourdocs/mcp-server` README](https://github.com/fixyourdocs/fixyou
 - **Mode A.** The next time an agent runs against **your repo** and hits broken docs, it reads `AGENTS.md`, sees the block, and POSTs a v0 Docs Feedback Protocol report to [`hub.fixyourdocs.io/v1/reports`](https://hub.fixyourdocs.io/v1/reports). There is nothing to install on the agent side; the block is the integration.
 - **Mode B.** While you work on **any** project, when your agent relies on a **third-party** doc page that turns out to be broken, it offers — with your confirmation, and on public docs only — to file the same kind of report about **that third party's** docs.
 
-Either way, a report only becomes a **GitHub Issue** once the party that owns the doc's domain connects the hub: they install the FixYourDocs GitHub App and verify they own the domain via a DNS-TXT record. Until then the report is stored but not delivered. So Mode B widens **who can send** a report; it does not change **who has to onboard to receive** one.
+Either way, a report only becomes a **GitHub Issue** once the party that owns the docs connects the hub: they install the FixYourDocs GitHub App and verify they own the docs. Until then the report is stored but not delivered. So Mode B widens **who can send** a report; it does not change **who has to onboard to receive** one.
 
 ## Licence
 
