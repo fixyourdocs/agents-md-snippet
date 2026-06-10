@@ -10,15 +10,11 @@ The block speaks the [Docs Feedback Protocol](https://docsfeedback.org) — an o
 
 There are two distinct, complementary adoption paths. They coexist — neither replaces the other.
 
-- **Mode A — first-party (paste into your repo).** You maintain some docs. You paste the [canonical block](#the-snippet) into *your* repo's `AGENTS.md`, and every agent that works **in your repo** reports **your repo's** broken docs back to you. This is what the rest of this README, the `fixyourdocs init` CLI, and the SDKs are built around. Wording: *"documentation in **this repository**."*
+- **Mode A — first-party (paste into your repo).** You maintain some docs. You paste the [canonical block](#the-snippet) into *your* repo's `AGENTS.md`, and every agent that works **in your repo** reports **your repo's** broken docs back to you.
 
 - **Mode B — consumer-side (install into your own agent).** You're a developer building something unrelated, and your agent consults a **third-party** library's / API's / framework's docs that turn out to be broken. You install the [report-anywhere block](#reporting-third-party-docs-consumer-side) into your *own, global* agent config (plus the [`@fixyourdocs/mcp-server`](#mcp-server)), and your agent **offers to report** that third party's stale docs — even though that third party never instrumented their repo. Wording: *"external / third-party docs you relied on."*
 
 Mode A is supply-side instrumentation; Mode B is demand-side. In both, the **receiver** (the docs owner) still has to claim and DNS-verify their domain and install the hub integration to receive anything — Mode B only removes the *reporting-side* install requirement, not the receiver's.
-
-## Why
-
-Agents already read `AGENTS.md` (Cursor, Claude Code, Codex, Devin, Gemini CLI, Copilot, …). One paste-ready block is enough to turn every agent run on your repo into a free, structured signal about what is wrong with your docs — without changing any agent.
 
 ## The snippet
 
@@ -50,8 +46,6 @@ How to file a report:
 Spec: https://docsfeedback.org
 ```
 
-The block is the canonical wording. Other repositories (the FixYourDocs CLI, the SDKs, the docs-platform integrations) embed this same text by SHA-pinned drift check rather than by hand-copy — see the [snippet-drift workflow](.github/workflows/snippet-drift.yml).
-
 ## Reporting third-party docs (consumer side)
 
 **(Mode B.)** The block above is repo-scoped on purpose — it says *"documentation in **this repository**."* If instead you want **your own agent** to report the broken third-party docs it stumbles on while you build something else, install the block below into your *global* agent config — `~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`, your global Cursor rules, or wherever your client reads global instructions — rather than into any one project's `AGENTS.md`:
@@ -80,8 +74,6 @@ Prefer the `file_doc_feedback` MCP tool from `@fixyourdocs/mcp-server`
 if available; otherwise POST to `https://hub.fixyourdocs.io/v1/reports`
 per https://docsfeedback.org.
 ```
-
-Unlike the Mode A block, this one is **not** under the `snippet-drift` SHA-lock. The `fixyourdocs init --global` consumer-install path (in both SDKs) embeds its own inline copy of this text rather than pinning to a shared constant — a deliberate choice to avoid a second cross-repo content lock for little gain. Treat this README as the **canonical** wording and keep the CLI copies in step with it by hand. The matching consent + privacy behaviour — refusing non-public `doc_url`s and honouring a doc host's `/.well-known/docs-feedback.json` opt-out **before** anything leaves your machine — is enforced for you by the [`@fixyourdocs/mcp-server`](#mcp-server) and the SDK clients it builds on, so the MCP tool is the recommended carrier for Mode B.
 
 ## Install
 
