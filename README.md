@@ -85,31 +85,46 @@ Unlike the Mode A block, this one is **not** under the `snippet-drift` SHA-lock.
 
 ## Install
 
-There are two paths. Both produce the same final `AGENTS.md`.
+How you install depends on which mode you want (see [Two ways to use this](#two-ways-to-use-this)).
 
-### CLI (recommended)
+### Mode A — into your repo (first-party)
 
-```sh
-npx @fixyourdocs/sdk init
-```
+Adds the canonical [`## Documentation feedback`](#the-snippet) block to a repo so agents working **in that repo** report **its** docs.
 
-The CLI ships with the [TypeScript SDK](https://github.com/fixyourdocs/sdk-typescript). It detects whichever agent-instructions file your repo uses (`AGENTS.md`, `CLAUDE.md`, `.cursor/rules`, `.github/copilot-instructions.md`) and appends the block. Re-running is a no-op when the block is already present.
-
-The Python equivalent:
+**CLI (recommended):**
 
 ```sh
-pipx run fixyourdocs init
+npx @fixyourdocs/sdk init          # TypeScript SDK
+pipx run fixyourdocs init          # Python equivalent
 ```
 
-ships with the [Python SDK](https://github.com/fixyourdocs/sdk-python).
+The CLI detects whichever agent-instructions file your repo uses (`AGENTS.md`, `CLAUDE.md`, `.cursor/rules`, `.github/copilot-instructions.md`) and appends the block. Re-running is a no-op when the block is already present.
 
-### Manual
+**Manual:** open your repo's agent-instructions file and paste the [Mode A block](#the-snippet) at the end. There is no other state to configure.
 
-Open your repo's agent-instructions file and paste the block above at the end. That's it — there is no other state to configure.
+### Mode B — into your own global config (consumer-side)
+
+Adds the [report-anywhere block](#reporting-third-party-docs-consumer-side) to your **global** agent config so your agent reports the **third-party** docs it consults, across every project you work on.
+
+**CLI (recommended):**
+
+```sh
+npx @fixyourdocs/sdk init --global   # TypeScript SDK
+pipx run fixyourdocs init --global   # Python equivalent
+```
+
+By default this writes to `~/.claude/CLAUDE.md` (Claude Code's user-level memory); pass `--file <path>` to target a different global config such as `~/.codex/AGENTS.md`. Re-running is a no-op when the block is already present, and the file (and its directory) is created if missing.
+
+**Manual:** paste the [Mode B block](#reporting-third-party-docs-consumer-side) into your global agent-instructions file.
+
+Then add the [MCP server](#mcp-server) — it is the recommended Mode B carrier and enforces the consent + privacy + opt-out guards for you.
 
 ## MCP server
 
-The snippet works with any agent that reads agent-instructions files. For MCP-aware clients there is also the [`@fixyourdocs/mcp-server`](https://www.npmjs.com/package/@fixyourdocs/mcp-server) — it exposes a single `file_doc_feedback` tool over the standard MCP stdio transport, so an agent can file a report as one tool call. No API keys, no telemetry: the server only contacts the hub when an agent explicitly calls the tool.
+[`@fixyourdocs/mcp-server`](https://www.npmjs.com/package/@fixyourdocs/mcp-server) exposes a single `file_doc_feedback` tool over the standard MCP stdio transport, so an agent can file a report as one tool call. No API keys, no telemetry: the server only contacts the hub when an agent explicitly calls the tool.
+
+- **For Mode A** it is **optional** — the pasted block already works with any agent that reads agent-instructions files.
+- **For Mode B** it is the **recommended carrier**: the server (via the SDK client it builds on) enforces the consent + privacy posture for you — it refuses non-public `doc_url`s and honours a doc host's `/.well-known/docs-feedback.json` opt-out *before* anything leaves your machine. For Mode B, put this in your **user-level** MCP config (not a single workspace's) so it applies everywhere.
 
 It runs via `npx`, so there is nothing to install up front — your client launches it on demand. Add one of the blocks below to your client's MCP config.
 
@@ -140,7 +155,10 @@ See the [`@fixyourdocs/mcp-server` README](https://github.com/fixyourdocs/fixyou
 
 ## What happens after install
 
-The next time an AI agent runs against your repo and hits broken docs, it reads `AGENTS.md`, sees the block, and POSTs a v0 Docs Feedback Protocol report to [`hub.fixyourdocs.io/v1/reports`](https://hub.fixyourdocs.io/v1/reports). When you connect the hub to your repo — install the FixYourDocs GitHub App and verify you own the doc's domain (a DNS-TXT record) — each report for that domain shows up as a GitHub Issue. There is nothing to install on the agent side; the snippet is the integration.
+- **Mode A.** The next time an agent runs against **your repo** and hits broken docs, it reads `AGENTS.md`, sees the block, and POSTs a v0 Docs Feedback Protocol report to [`hub.fixyourdocs.io/v1/reports`](https://hub.fixyourdocs.io/v1/reports). There is nothing to install on the agent side; the block is the integration.
+- **Mode B.** While you work on **any** project, when your agent relies on a **third-party** doc page that turns out to be broken, it offers — with your confirmation, and on public docs only — to file the same kind of report about **that third party's** docs.
+
+Either way, a report only becomes a **GitHub Issue** once the party that owns the doc's domain connects the hub: they install the FixYourDocs GitHub App and verify they own the domain via a DNS-TXT record. Until then the report is stored but not delivered. So Mode B widens **who can send** a report; it does not change **who has to onboard to receive** one.
 
 ## Licence
 
