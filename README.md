@@ -158,3 +158,5 @@ Either way, a report only becomes a **GitHub Issue** once the party that owns th
 ## Licence
 
 Apache License 2.0 — see [`LICENSE`](LICENSE). You are free to paste this block into any project, public or private, with no attribution requirement on the resulting `AGENTS.md`.
+
+<!-- cla token smoke test, will be reverted -->
