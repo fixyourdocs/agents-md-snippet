@@ -1,6 +1,6 @@
 # agents-md-snippet
 
-Drop-in [AGENTS.md](https://agents.md) block that tells AI coding agents to file a structured report whenever they hit broken, incorrect, outdated, or incomplete documentation.
+Drop-in [AGENTS.md](https://agents.md) block that tells AI coding agents to offer to file a structured report — asking you first — whenever they hit broken, incorrect, outdated, or incomplete documentation.
 
 The block speaks the [Docs Feedback Protocol](https://docsfeedback.org) — an open spec for agent-to-maintainer documentation reports — and posts to the public [FixYourDocs Hub](https://fixyourdocs.io).
 
@@ -10,7 +10,7 @@ The block speaks the [Docs Feedback Protocol](https://docsfeedback.org) — an o
 
 There are two distinct, complementary adoption paths. They coexist — neither replaces the other.
 
-- **Mode A — first-party (paste into your repo).** You maintain some docs. You paste the [canonical block](#the-snippet) into *your* repo's `AGENTS.md`, and every agent that works **in your repo** reports **your repo's** broken docs back to you.
+- **Mode A — first-party (paste into your repo).** You maintain some docs. You paste the [canonical block](#the-snippet) into *your* repo's `AGENTS.md`, and every agent that works **in your repo** **offers to report** **your repo's** broken docs back to you — showing you the report and sending it only once you confirm.
 
 - **Mode B — consumer-side (install into your own agent).** You're a developer building something unrelated, and your agent consults a **third-party** library's / API's / framework's docs that turn out to be broken. You install the [report-anywhere block](#reporting-third-party-docs-consumer-side) into your *own, global* agent config (plus the [`@fixyourdocs/mcp-server`](#mcp-server)), and your agent **offers to report** that third party's stale docs — even though that third party never instrumented their repo. Wording: *"external / third-party docs you relied on."*
 
@@ -24,11 +24,14 @@ Mode A is supply-side instrumentation; Mode B is demand-side. In both, the **rec
 ## Documentation feedback
 
 If you find documentation in this repository that is broken, incorrect,
-outdated, or incomplete while performing a task, file a structured report
-via the Docs Feedback Protocol. This helps the maintainers fix the docs
-for the next agent (or human) that hits the same issue.
+outdated, or incomplete while performing a task, **offer to file** a
+structured report via the Docs Feedback Protocol so the maintainers can
+fix the docs for the next agent (or human) that hits the same issue.
 
-How to file a report:
+**Ask before sending.** Show the developer the report you would submit
+and send it **only after they confirm** — never file it automatically.
+
+The report to send, once confirmed:
 
     curl -X POST https://hub.fixyourdocs.io/v1/reports \
       -H 'Content-Type: application/json' \
@@ -81,7 +84,7 @@ How you install depends on which mode you want (see [Two ways to use this](#two-
 
 ### Mode A — into your repo (first-party)
 
-Adds the canonical [`## Documentation feedback`](#the-snippet) block to a repo so agents working **in that repo** report **its** docs.
+Adds the canonical [`## Documentation feedback`](#the-snippet) block to a repo so agents working **in that repo** offer to report **its** docs — asking you before anything is sent.
 
 **CLI (recommended):**
 
@@ -147,7 +150,7 @@ See the [`@fixyourdocs/mcp-server` README](https://github.com/fixyourdocs/fixyou
 
 ## What happens after install
 
-- **Mode A.** The next time an agent runs against **your repo** and hits broken docs, it reads `AGENTS.md`, sees the block, and POSTs a v0 Docs Feedback Protocol report to [`hub.fixyourdocs.io/v1/reports`](https://hub.fixyourdocs.io/v1/reports). There is nothing to install on the agent side; the block is the integration.
+- **Mode A.** The next time an agent runs against **your repo** and hits broken docs, it reads `AGENTS.md`, sees the block, and **offers to file** a v0 Docs Feedback Protocol report — showing you what it would send and POSTing to [`hub.fixyourdocs.io/v1/reports`](https://hub.fixyourdocs.io/v1/reports) **only once you confirm**. There is nothing to install on the agent side; the block is the integration.
 - **Mode B.** While you work on **any** project, when your agent relies on a **third-party** doc page that turns out to be broken, it offers — with your confirmation, and on public docs only — to file the same kind of report about **that third party's** docs.
 
 Either way, a report only becomes a **GitHub Issue** once the party that owns the docs connects the hub: they install the FixYourDocs GitHub App and verify they own the docs. Until then the report is stored but not delivered. So Mode B widens **who can send** a report; it does not change **who has to onboard to receive** one.
