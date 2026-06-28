@@ -31,13 +31,20 @@ fix the docs for the next agent (or human) that hits the same issue.
 **Ask before sending.** Show the developer the report you would submit
 and send it **only after they confirm** — never file it automatically.
 
+Set `doc_url` to the document's **public URL**: the page URL if you read
+it on a docs site, or — for a file in **this** repository —
+`https://github.com/<owner>/<repo>/blob/HEAD/<path>`, where `<owner>/<repo>`
+comes from the repo's `upstream` remote (falling back to `origin`) and
+`<path>` is the file's repo-relative path. `HEAD` resolves to the default
+branch, so no branch name or commit SHA is needed.
+
 The report to send, once confirmed:
 
     curl -X POST https://hub.fixyourdocs.io/v1/reports \
       -H 'Content-Type: application/json' \
       -d '{
         "protocol_version": "0",
-        "doc_url": "<URL or path of the doc you were reading>",
+        "doc_url": "<the doc's public URL — see above>",
         "agent":   { "name": "<your agent id, e.g. claude-code>" },
         "report":  {
           "kind":    "<broken | incorrect | outdated | missing | unclear | other>",
